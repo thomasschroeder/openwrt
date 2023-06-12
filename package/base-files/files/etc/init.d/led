@@ -127,6 +127,20 @@ load_led() {
 
 start() {
 	[ -e /sys/class/leds/ ] && {
+		[ -s /var/run/lights_toggle ] && {
+			local brightness trigger lights_toggle
+			read lights_toggle < /var/run/lights_toggle
+			[ $lights_toggle = "0" ] && {
+				echo "/var/run/lights_toggle = '0', shutting down all LEDs"
+				for brightness in /sys/class/leds/*/brightness ; do
+					echo "0" > $brightness
+				done
+				for trigger in /sys/class/leds/*/trigger ; do
+					echo "none" > $trigger
+				done
+				exit 0
+			}
+		}
 		[ -s /var/run/led.state ] && {
 			local led trigger brightness
 			while read led trigger brightness; do
