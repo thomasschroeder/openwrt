@@ -1,16 +1,30 @@
 #!/bin/sh
 
-[[ "${ACTION}" = "released" ]] || exit 0
-
 . /lib/functions.sh
+
+lights_toggle="/var/run/lights_toggle"
 
 case "$(board_name)" in
 tplink,ec330-g5u-v1)
+	[ "$ACTION" = "released" ] || exit 0
 	led_light="/sys/class/gpio/led-light/value"
 	echo "$((!$(cat $led_light)))" > "$led_light"
+;;
+#push buttons
+example,tbd)
+	[ "$ACTION" = "released" ] || exit 0
+	echo "$((!$(cat $lights_toggle)))" > $lights_toggle
+;;
+#toggle buttons
+zyxel,wsm20)
+	[ "$ACTION" = "released" ] && value=0
+	[ "$ACTION" = "pressed" ] && value=1
+        echo $value > $lights_toggle
 ;;
 	*)
 ;;
 esac
+
+/etc/init.d/led restart
 
 return 0
