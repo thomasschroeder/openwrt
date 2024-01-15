@@ -97,6 +97,7 @@
 		reg = <1>;
 		phy-mode = "2500base-x";
 		phy-handle = <&phy1>;
+		label = "wan";
 	};
 
 	mdio: mdio-bus {
